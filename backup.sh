@@ -1,22 +1,13 @@
 #!/bin/bash
 set -eu
 
-# Constants
-REPOS_MAX_PAGE=2
-REPOS_PER_PAGE=100
-REPOS_TYPE='owner'
-
 list_repos() {
     # https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#list-repositories-for-the-authenticated-user
-    local page
-
-    page="${1}"
-
     curl --silent -L \
         -H 'Accept: application/vnd.github+json' \
         -H "Authorization: Bearer ${GH_TOKEN}" \
-        -H 'X-GitHub-Api-Version: 2022-11-28' \
-        "https://api.github.com/user/repos?type=${REPOS_TYPE}&per_page=${REPOS_PER_PAGE}&page=${page}" \
+        -H "X-GitHub-Api-Version: ${GH_API_VERSION:-2022-11-28}" \
+        "https://api.github.com/user/repos?type=${REPOS_TYPE:-owner}&per_page=${REPOS_PER_PAGE:-100}&page=${1}&sort=pushed" \
         | jq '.[] | select (.fork == false) | .ssh_url'
 }
 
@@ -72,7 +63,7 @@ main() {
         pushd "${dest_folder}"
     fi
 
-    for page in $(seq 1 ${REPOS_MAX_PAGE}); do
+    for page in $(seq 1 "${REPOS_MAX_PAGE:-2}"); do
         echo ">>> Syncing repositories from page n° ${page}…"
         echo
 
