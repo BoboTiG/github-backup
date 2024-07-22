@@ -41,7 +41,7 @@ fetch_updates() {
 
         if [ "${branch_ref}" == "${current_branch_ref}" ]; then
             echo ">>> Updating current branch ${branch_ref} from ${remote}…"
-            git pull --ff-only
+            git pull --rebase
         else
             echo ">>> Updating non-current ref ${branch_ref} from ${remote}…"
             git fetch "${remote}" "${branch_ref}:${branch_ref}"
