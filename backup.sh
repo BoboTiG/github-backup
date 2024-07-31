@@ -30,7 +30,7 @@ fetch_updates() {
     pushd "${repos}"
 
     # Update the list of remote branches & tags
-    git fetch --prune --tags
+    git fetch --prune --tags --force
 
     # Sync all branches
     current_branch_ref="$(git symbolic-ref HEAD 2>&-)"
