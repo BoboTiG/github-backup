@@ -27,7 +27,7 @@ fetch_updates() {
     # First sync
     [ -d "${repos}" ] || git clone "${ssh_url}"
 
-    pushd "${repos}"
+    pushd "${repos}" >/dev/null
 
     # Update the list of remote branches & tags
     git fetch --prune --tags --force
@@ -48,7 +48,7 @@ fetch_updates() {
         fi
     done
 
-    popd
+    popd >/dev/null
     echo
     echo
 }
@@ -60,7 +60,7 @@ main() {
 
     if [ -n "${dest_folder}" ]; then
         [ -d "${dest_folder}" ] || mkdir -v "${dest_folder}"
-        pushd "${dest_folder}"
+        pushd "${dest_folder}" >/dev/null
     fi
 
     for page in $(seq 1 "${REPOS_MAX_PAGE:-2}"); do
@@ -72,7 +72,7 @@ main() {
         done
     done
 
-    [ -n "${dest_folder}" ] && popd
+    [ -n "${dest_folder}" ] && popd >/dev/null
 }
 
 main "$@"
