@@ -13,6 +13,7 @@ list_repos() {
 
 fetch_updates() {
     # https://stackoverflow.com/a/22792124/1117028 (+ comments)
+    local branch
     local branch_ref
     local current_branch_ref
     local remote
@@ -37,14 +38,15 @@ fetch_updates() {
     git branch -r | /bin/grep -v ' -> ' | while read -r remote_branch; do
         # Split <remote>/<branch> into `remote` and `branch_ref` parts
         remote="${remote_branch%%/*}"
-        branch_ref="refs/heads/${remote_branch#*/}"
+        branch="${remote_branch#*/}"
+        branch_ref="refs/heads/${branch}"
 
         if [ "${branch_ref}" == "${current_branch_ref}" ]; then
             echo ">>> Updating current branch ${branch_ref} from ${remote}…"
             git pull --rebase
         else
             echo ">>> Updating non-current ref ${branch_ref} from ${remote}…"
-            git fetch "${remote}" "${branch_ref}:${branch_ref}"
+            git fetch "${remote}" "${branch_ref}:${branch_ref}" || (git branch -D "${branch}" && git fetch "${remote}" "${branch_ref}:${branch_ref}")
         fi
     done
 
