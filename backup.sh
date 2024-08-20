@@ -44,9 +44,11 @@ fetch_updates() {
         if [ "${branch_ref}" == "${current_branch_ref}" ]; then
             echo ">>> Updating current branch ${branch}…"
             git pull --rebase
+            git grep -q filter=lfs "${remote}" "${branch}" -- .gitattributes '**/.gitattributes' && git lfs pull || true
         else
             echo ">>> Updating non-current branch ${branch}…"
             git fetch "${remote}" "${branch_ref}:${branch_ref}" || (git branch -D "${branch}" && git fetch "${remote}" "${branch_ref}:${branch_ref}")
+            git grep -q filter=lfs "${remote}" "${branch}" -- .gitattributes '**/.gitattributes' && git lfs fetch "${remote}" "${branch}" || true
         fi
     done
 
