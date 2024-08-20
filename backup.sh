@@ -23,7 +23,7 @@ fetch_updates() {
     ssh_url="$(echo "${1}" | /bin/sed 's/"//g')"
     repos="$(echo "${ssh_url#*/}" | /bin/sed 's/\.git$//')"
 
-    echo ">>> Syncing repository ${ssh_url} in folder ${repos}…"
+    echo ">>> Syncing ${repos}…"
 
     # First sync
     [ -d "${repos}" ] || git clone "${ssh_url}"
@@ -42,10 +42,10 @@ fetch_updates() {
         branch_ref="refs/heads/${branch}"
 
         if [ "${branch_ref}" == "${current_branch_ref}" ]; then
-            echo ">>> Updating current branch ${branch_ref} from ${remote}…"
+            echo ">>> Updating current branch ${branch}…"
             git pull --rebase
         else
-            echo ">>> Updating non-current ref ${branch_ref} from ${remote}…"
+            echo ">>> Updating non-current branch ${branch}…"
             git fetch "${remote}" "${branch_ref}:${branch_ref}" || (git branch -D "${branch}" && git fetch "${remote}" "${branch_ref}:${branch_ref}")
         fi
     done
@@ -66,7 +66,7 @@ main() {
     fi
 
     for page in $(seq 1 "${REPOS_MAX_PAGE:-2}"); do
-        echo ">>> Syncing repositories from page n° ${page}…"
+        echo ">>> Fetching repositories from page n° ${page}…"
         echo
 
         for repo_ssh_url in $(list_repos "${page}"); do
